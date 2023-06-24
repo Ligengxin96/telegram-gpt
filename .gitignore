@@ -25,6 +25,8 @@ yarn-debug.log*
 yarn-error.log*
 ormlogs.log*
 
+*.log
+
 ormconfig.json
 
 database
