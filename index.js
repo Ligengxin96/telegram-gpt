@@ -16,9 +16,9 @@ const hanlderTextMessage = async (msg) => {
   const { text, sticker, photo } = msg;
   if (text) {
     const timeout = setTimeout(() => {
-      bot.sendMessage(chatId, '请稍等下，正在生成内容...');
+      bot.sendMessage(chatId, 'Please wait a moment, generating content now...');
     }, 10 * 1000);
-    const [{ isSuccess, error, data }, _] = await Promise.all([getChatCompletions(msg), bot.sendChatAction(chatId, 'typing')]);
+    const [{ isSuccess, error, data }] = await Promise.all([getChatCompletions(msg), bot.sendChatAction(chatId, 'typing')]);
     clearTimeout(timeout);
     if (isSuccess) {
       bot.sendMessage(chatId, data);
@@ -26,7 +26,7 @@ const hanlderTextMessage = async (msg) => {
       bot.sendMessage(chatId, 'Call Azure OpenAI API failed. ' + error.message);
     }
   } else {
-    bot.sendMessage(chatId, '暂时不支持非文本消息');
+    bot.sendMessage(chatId, `Non-text messages are currently not supported.`);
   }
 };
 
@@ -34,7 +34,8 @@ bot.on('message', async (msg) => {
   console.log(dateFormat(), `receive message: ${JSON.stringify(msg)}`)
   const chatId = msg.chat.id;
   if (IS_PRIVATE && !AUTH_USER_IDS.includes(msg.from.id)) {
-    return bot.sendMessage(chatId, '你没有权限使用此私人机器人');
+    console.warn(dateFormat(), `${msg.from.id} is not in white list`);
+    return bot.sendMessage(chatId, `You don't have permission to use this private bot.`);
   } else {
     hanlderTextMessage(msg);
   }
@@ -45,13 +46,20 @@ bot.on('channel_post', (msg) => {
 });
 
 bot.on('polling_error', (error) => {
-  console.log(error);
+  console.log(dateFormat(), error);
 });
 
 bot.on('webhook_error', (error) => {
-  console.log(error);
+  console.log(dateFormat(), error);
 });
 
 bot.on('error', (error) => {
-  console.log(error);
+  console.log(dateFormat(), error);
 });
+
+const startTimestamp = Date.now();
+console.log(dateFormat(), 'Bot is Started');
+
+setInterval(() => {
+  console.log(dateFormat(), `Bot has been running for ${Math.floor((Date.now() - startTimestamp) / 1000 / 60)} mins already`);
+}, 1000 * 60 * 10);
