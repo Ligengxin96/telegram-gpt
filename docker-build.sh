@@ -1,1 +1,1 @@
-docker build -t telegram-gpt-image .
+docker build -t ligengxin96/telegram-gpt .
