@@ -1,24 +1,13 @@
 const TelegramBot = require('node-telegram-bot-api');
 const { dateFormat } = require('./util');
+const { TOKEN, PROXY, IS_PRIVATE, AUTH_USER_IDS } = require('./config');
 
 const { getChatCompletions } = require('./chat');
 
-const dotenv = require('dotenv');
-dotenv.config();
-
-const token = process.env.TOKEN;
-if (!token) throw new Error('TOKEN is not defined');
-
-const authUserIdsStr = process.env.AUTH_USER_IDS;
-const authUserIds = [];
-if (authUserIdsStr) {
-  authUserIds.push(...authUserIdsStr.split(',').map((id) => parseInt(id)).filter((id) => !isNaN(id)));
-}
-
-const bot = new TelegramBot(token, {
+const bot = new TelegramBot(TOKEN, {
   polling: true,
   request: {
-    proxy: process.env.PROXY || null,
+    proxy: PROXY || null,
   },
 });
 
@@ -26,11 +15,15 @@ const hanlderTextMessage = async (msg) => {
   const chatId = msg.chat.id;
   const { text, sticker, photo } = msg;
   if (text) {
-    const { isSuccess, error, data } = await getChatCompletions(msg);
+    const timeout = setTimeout(() => {
+      bot.sendMessage(chatId, '请稍等下，正在生成内容...');
+    }, 10 * 1000);
+    const [{ isSuccess, error, data }, _] = await Promise.all([getChatCompletions(msg), bot.sendChatAction(chatId, 'typing')]);
+    clearTimeout(timeout);
     if (isSuccess) {
       bot.sendMessage(chatId, data);
     } else {
-      bot.sendMessage(chatId, '调用Azure OpenAI API失败.' + error.message);
+      bot.sendMessage(chatId, 'Call Azure OpenAI API failed. ' + error.message);
     }
   } else {
     bot.sendMessage(chatId, '暂时不支持非文本消息');
@@ -40,7 +33,7 @@ const hanlderTextMessage = async (msg) => {
 bot.on('message', async (msg) => {
   console.log(dateFormat(), `receive message: ${JSON.stringify(msg)}`)
   const chatId = msg.chat.id;
-  if (authUserIds.length !== 0 && !authUserIds.includes(msg.from.id)) {
+  if (IS_PRIVATE && !AUTH_USER_IDS.includes(msg.from.id)) {
     return bot.sendMessage(chatId, '你没有权限使用此私人机器人');
   } else {
     hanlderTextMessage(msg);
@@ -61,4 +54,4 @@ bot.on('webhook_error', (error) => {
 
 bot.on('error', (error) => {
   console.log(error);
-})
+});

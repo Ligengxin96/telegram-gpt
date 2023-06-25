@@ -4,6 +4,8 @@ const isObject = require('lodash/isObject');
 const Sqlite = require('better-sqlite3');
 
 const { dateFormat } = require('./util');
+const { AUTH_USER_IDS } = require('./config');
+
 
 const TABLES = {
   CHAT: 'chat',
@@ -33,6 +35,9 @@ class Database {
   init() {
     Object.keys(TABLES).forEach((tableName) => {
       this.createTable(tableName, TABLE_FIELDS[TABLES[tableName]]);
+      AUTH_USER_IDS.forEach((userId) => {
+        this.createTable(`${tableName}_${userId}`, TABLE_FIELDS[TABLES[tableName]]);
+      });
     });
   }
 
