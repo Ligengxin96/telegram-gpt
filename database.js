@@ -92,9 +92,13 @@ class Database {
     }
   }
 }
-
-const databaseFilePath = './database/telegram-GPT.sqlite';
+const databaseDir = './database';
+const databaseFilePath = `./${databaseDir}/telegram-GPT.sqlite`;
 try {
+  if (!fs.existsSync(databaseDir)) {
+    fs.mkdirSync(databaseDir);
+  }
+
   if (!fs.existsSync(databaseFilePath)) {
     fs.writeFileSync(databaseFilePath, '');
   }
