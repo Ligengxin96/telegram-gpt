@@ -2,6 +2,7 @@ const isArray = require('lodash/isArray');
 const isUndefined = require('lodash/isUndefined');
 const isObject = require('lodash/isObject');
 const Sqlite = require('better-sqlite3');
+const fs = require('fs');
 
 const { dateFormat } = require('./util');
 const { AUTH_USER_IDS } = require('./config');
@@ -92,7 +93,16 @@ class Database {
   }
 }
 
-const database = new Database('./database/telegram-GPT.sqlite');
+const databaseFilePath = './database/telegram-GPT.sqlite';
+try {
+  if (!fs.existsSync(databaseFilePath)) {
+    fs.writeFileSync(databaseFilePath, '');
+  }
+} catch (error) {
+  console.log(dateFormat(), `Create database file error: ${error}`);
+}
+
+const database = new Database(databaseFilePath);
 database.init();
 module.exports = {
   database,
