@@ -22,6 +22,7 @@ const TABLE_FIELDS = {
     ['role', 'VARCHAR(10)'],
     ['content', 'TEXT'],
     ['reply', 'TEXT'],
+    ['command', 'VARCHAR(10)'],
     ['createdAt', 'DATETIME DEFAULT CURRENT_TIMESTAMP'],
     ['updatedAt', 'DATETIME DEFAULT CURRENT_TIMESTAMP'],
   ],

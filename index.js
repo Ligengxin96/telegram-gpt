@@ -23,7 +23,7 @@ const hanlderTextMessage = async (msg) => {
     if (isSuccess) {
       bot.sendMessage(chatId, data);
     } else {
-      bot.sendMessage(chatId, 'Call Azure OpenAI API failed. ' + error.message);
+      bot.sendMessage(chatId, `Call Azure OpenAI API failed. Error: ${error.message || error.error.message}`);
     }
   } else {
     bot.sendMessage(chatId, `Non-text messages are currently not supported.`);
@@ -57,9 +57,4 @@ bot.on('error', (error) => {
   console.log(dateFormat(), error);
 });
 
-const startTimestamp = Date.now();
 console.log(dateFormat(), 'Bot is Started');
-
-setInterval(() => {
-  console.log(dateFormat(), `Bot has been running for ${Math.floor((Date.now() - startTimestamp) / 1000 / 60)} mins already`);
-}, 1000 * 60 * 10);

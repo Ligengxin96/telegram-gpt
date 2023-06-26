@@ -17,6 +17,16 @@ if (authUserIdsStr) {
   authUserIds.push(...authUserIdsStr.split(',').map((id) => parseInt(id)).filter((id) => !isNaN(id)));
 }
 
+const COMMANDSLIST = ['/new', '/start', '/help', '/chat', '/cancel', '/stop'];
+const COMMANDS = {
+  NEW: COMMANDSLIST[0],
+  START: COMMANDSLIST[1],
+  HELP: COMMANDSLIST[2],
+  CHAT: COMMANDSLIST[3],
+  CANCEL: COMMANDSLIST[4],
+  STOP: COMMANDSLIST[5],
+};
+
 module.exports = {
   TOKEN,
   AUTH_USER_IDS: authUserIds,
@@ -24,4 +34,6 @@ module.exports = {
   PROXY: process.env.PROXY,
   OPENAI_ENDPOINT,
   OPENAI_API_KEY,
+  COMMANDS,
+  COMMANDSLIST,
 }
