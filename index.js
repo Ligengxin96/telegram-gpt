@@ -2,7 +2,7 @@ const TelegramBot = require('node-telegram-bot-api');
 const { dateFormat } = require('./util');
 const { TOKEN, PROXY, IS_PRIVATE, AUTH_USER_IDS } = require('./config');
 
-const { getChatCompletions } = require('./chat');
+const { processTextMessage } = require('./chat');
 
 const bot = new TelegramBot(TOKEN, {
   polling: true,
@@ -18,7 +18,7 @@ const hanlderTextMessage = async (msg) => {
     const timeout = setTimeout(() => {
       bot.sendMessage(chatId, 'Please wait a moment, generating content now...');
     }, 10 * 1000);
-    const [{ isSuccess, error, data }] = await Promise.all([getChatCompletions(msg), bot.sendChatAction(chatId, 'typing')]);
+    const [{ isSuccess, error, data }] = await Promise.all([processTextMessage(msg), bot.sendChatAction(chatId, 'typing')]);
     clearTimeout(timeout);
     if (isSuccess) {
       bot.sendMessage(chatId, data);
