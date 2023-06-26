@@ -47,7 +47,7 @@ const processTextMessage = async (msg) => {
 const getChatCompletions = async (originMsg, messages, command) => {
   try {
     const { chat: { id: chatId }, from: { id: uerId, username }, message_id: messageId, text } = originMsg;
-    const completions = await client.getChatCompletions('gpt-35-turbo', messages, { maxTokens: 8192 });
+    const completions = await client.getChatCompletions('gpt-35-turbo', messages, { maxTokens: 8192 - JSON.stringify(messages).length });
     const replys = [];
     const gptReplayMessages = [];
     for (const choice of completions.choices) {
