@@ -31,14 +31,18 @@ const processTextMessage = async (msg) => {
   const historyMessages = await database.findAll(tableName, ['role, content', 'reply', 'command'], `${IS_PRIVATE ? '' : `uerId = ${uerId}`}`, [], 'ORDER BY id DESC LIMIT 10');
   for (let i = historyMessages.length - 1; i >= 0; i--) {
     const { role, content, reply, command } = historyMessages[i];
+    let message = content;
     if (command === COMMANDS.NEW) {
+      message = content.substr(content.indexOf(command) + command.length).trim();
       messages = [];
     };
-    messages.push({ role, content });
+    messages.push({ role, content: message });
     messages.push({ role: 'assistant', content: reply });
   }
   if (isNewChat) {
     messages = [{ role: 'user', content: message }];
+  } else {
+    messages.push({ role: 'user', content: message });
   }
 
   return getChatCompletions(msg, messages, command);
@@ -47,10 +51,22 @@ const processTextMessage = async (msg) => {
 const getChatCompletions = async (originMsg, messages, command) => {
   try {
     const { chat: { id: chatId }, from: { id: uerId, username }, message_id: messageId, text } = originMsg;
-    const completions = await client.getChatCompletions('gpt-35-turbo', messages, { maxTokens: 8192 - JSON.stringify(messages).length });
+    const timeout = setTimeout(() => {
+      console.warn(dateFormat, `Get reply timeout. text: ${text}`)
+    }, 30 * 1000);
+    const completions = await Promise.race([
+      client.getChatCompletions('gpt-35-turbo', messages, { maxTokens: 8192 - JSON.stringify(messages).length }),
+      new Promise((resolve) => { setTimeout(() => { resolve({ choices: [{ message: { content: 'Get reply timeout.' }, timeout: true }] }) }, 60 * 1000) }),
+    ]);
+    clearTimeout(timeout);
     const replys = [];
     const gptReplayMessages = [];
+
+    let isTimeout = false;
     for (const choice of completions.choices) {
+      if (choice.timeout) {
+        isTimeout = true;
+      }
       gptReplayMessages.push(choice.message);
       replys.push(choice.message.content);
     }
@@ -60,12 +76,12 @@ const getChatCompletions = async (originMsg, messages, command) => {
     const tableName = IS_PRIVATE ? `${TABLES.CHAT}_${uerId}` : TABLES.CHAT;
     await database.insertData(tableName,
       ['chatId', 'uerId', 'username', 'messageId', 'role', 'content', 'reply', 'command'],
-      database.dataPrepare({ chatId, uerId, username, messageId, role: 'user', content: text, reply, command })
+      database.dataPrepare({ chatId, uerId, username, messageId, role: 'user', content: text, reply: isTimeout ? '' : reply, command })
     );
 
     return { isSuccess: true, data: reply };
   } catch (error) {
-    console.log(dateFormat(), error);
+    console.error(dateFormat(), error);
     return { isSuccess: false, error };
   }
 };

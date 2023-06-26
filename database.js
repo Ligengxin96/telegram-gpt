@@ -60,7 +60,7 @@ class Database {
     try {
       this.#database.exec(`CREATE TABLE IF NOT EXISTS ${tableName} (${fields.map(field => field.join(" ")).join(",")})`);
     } catch (error) {
-      console.log(dateFormat(), error);
+      console.error(dateFormat(), error);
     }
   }
 
@@ -70,7 +70,7 @@ class Database {
       const stmt = this.#database.prepare(`SELECT ${fieldsStr} FROM ${tableName} WHERE ${where}`);
       return stmt.get(whereDatas);
     } catch (error) {
-      console.log(dateFormat(), error);
+      console.error(dateFormat(), error);
     }
   }
 
@@ -80,7 +80,7 @@ class Database {
       const stmt = this.#database.prepare(`SELECT ${fieldsStr} FROM ${tableName}${where ? " WHERE " + where : ""}${other ? " " + other : ""}`);
       return stmt.all([...whereDatas, ...otherDatas]);
     } catch (error) {
-      console.log(dateFormat(), error);
+      console.error(dateFormat(), error);
     }
   }
 
@@ -89,7 +89,7 @@ class Database {
       const stmt = this.#database.prepare(`INSERT INTO ${tableName} (${fields.join(",")}) VALUES (${fields.map(field => `@${field}`).join(",")})`);
       return stmt.run(data);
     } catch (error) {
-      console.log(dateFormat(), error);
+      console.error(dateFormat(), error);
     }
   }
 }
@@ -104,7 +104,7 @@ try {
     fs.writeFileSync(databaseFilePath, '');
   }
 } catch (error) {
-  console.log(dateFormat(), `Create database file error: ${error}`);
+  console.error(dateFormat(), `Create database file error: ${error}`);
 }
 
 const database = new Database(databaseFilePath);

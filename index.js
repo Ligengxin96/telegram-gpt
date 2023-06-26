@@ -46,15 +46,15 @@ bot.on('channel_post', (msg) => {
 });
 
 bot.on('polling_error', (error) => {
-  console.log(dateFormat(), error);
+  console.error(dateFormat(), error);
 });
 
 bot.on('webhook_error', (error) => {
-  console.log(dateFormat(), error);
+  console.error(dateFormat(), error);
 });
 
 bot.on('error', (error) => {
-  console.log(dateFormat(), error);
+  console.error(dateFormat(), error);
 });
 
 console.log(dateFormat(), 'Bot is Started');
