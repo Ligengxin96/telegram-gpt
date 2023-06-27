@@ -2,9 +2,7 @@ const { OpenAIClient, AzureKeyCredential } = require('@azure/openai');
 const { database, TABLES } = require('./database');
 const { dateFormat } = require('./util');
 
-const { OPENAI_ENDPOINT, OPENAI_API_KEY, IS_PRIVATE,
-  COMMANDS, COMMANDSLIST, TIPS,
-} = require('./config');
+const { OPENAI_ENDPOINT, OPENAI_API_KEY, IS_PRIVATE, COMMANDS, TIPS } = require('./config');
 
 const client = new OpenAIClient(OPENAI_ENDPOINT, new AzureKeyCredential(OPENAI_API_KEY));
 
@@ -26,7 +24,7 @@ const processTextMessage = async (msg) => {
         isNewChat = true;
         break;
       default: {
-        return { isSuccess: false, error: new Error(`Command ${command} is not supported. Please use ${COMMANDSLIST}`) };
+        break;
       }
     }
   }
