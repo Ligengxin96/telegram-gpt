@@ -2,12 +2,14 @@ const { OpenAIClient, AzureKeyCredential } = require('@azure/openai');
 const { database, TABLES } = require('./database');
 const { dateFormat } = require('./util');
 
-const { OPENAI_ENDPOINT, OPENAI_API_KEY, IS_PRIVATE, COMMANDS, COMMANDSLIST } = require('./config');
+const { OPENAI_ENDPOINT, OPENAI_API_KEY, IS_PRIVATE,
+  COMMANDS, COMMANDSLIST, TIPS,
+} = require('./config');
 
 const client = new OpenAIClient(OPENAI_ENDPOINT, new AzureKeyCredential(OPENAI_API_KEY));
 
 const processTextMessage = async (msg) => {
-  const { entities, from: { id: uerId }, text } = msg;
+  const { entities, from: { id: uerId, }, text } = msg;
 
   let message = text;
   let isNewChat = false;
@@ -18,6 +20,9 @@ const processTextMessage = async (msg) => {
     message = text.substr(offset + length).trim();
     switch (command) {
       case COMMANDS.NEW:
+        if (message) {
+          message = TIPS.DefaultEmptyMessage[languageCode];
+        }
         isNewChat = true;
         break;
       default: {

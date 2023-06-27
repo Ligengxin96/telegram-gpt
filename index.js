@@ -1,6 +1,6 @@
 const TelegramBot = require('node-telegram-bot-api');
 const { dateFormat } = require('./util');
-const { TOKEN, PROXY, IS_PRIVATE, AUTH_USER_IDS } = require('./config');
+const { TOKEN, PROXY, IS_PRIVATE, AUTH_USER_IDS, TIPS } = require('./config');
 
 const { processTextMessage } = require('./chat');
 
@@ -13,10 +13,10 @@ const bot = new TelegramBot(TOKEN, {
 
 const hanlderTextMessage = async (msg) => {
   const chatId = msg.chat.id;
-  const { text, sticker, photo } = msg;
+  const { text, sticker, photo, from: { language_code: languageCode } } = msg;
   if (text) {
     const timeout = setTimeout(() => {
-      bot.sendMessage(chatId, 'Please wait a moment, generating content now...');
+      bot.sendMessage(chatId, TIPS.Wating[languageCode]);
     }, 10 * 1000);
     const [{ isSuccess, error, data }] = await Promise.all([processTextMessage(msg), bot.sendChatAction(chatId, 'typing')]);
     clearTimeout(timeout);
