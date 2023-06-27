@@ -9,7 +9,7 @@ const { OPENAI_ENDPOINT, OPENAI_API_KEY, IS_PRIVATE,
 const client = new OpenAIClient(OPENAI_ENDPOINT, new AzureKeyCredential(OPENAI_API_KEY));
 
 const processTextMessage = async (msg) => {
-  const { entities, from: { id: uerId, }, text } = msg;
+  const { entities, from: { id: uerId, language_code: languageCode }, text } = msg;
 
   let message = text;
   let isNewChat = false;
@@ -20,7 +20,7 @@ const processTextMessage = async (msg) => {
     message = text.substr(offset + length).trim();
     switch (command) {
       case COMMANDS.NEW:
-        if (message) {
+        if (!message) {
           message = TIPS.DefaultEmptyMessage[languageCode];
         }
         isNewChat = true;
