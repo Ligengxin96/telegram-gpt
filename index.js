@@ -13,7 +13,7 @@ const bot = new TelegramBot(TOKEN, {
 
 const hanlderTextMessage = async (msg) => {
   const chatId = msg.chat.id;
-  const { text, sticker, photo, from: { language_code: languageCode } } = msg;
+  const { text, from: { language_code: languageCode }, sticker, photo } = msg;
   if (text) {
     const timeout = setTimeout(() => {
       bot.sendMessage(chatId, TIPS.Wating[languageCode]);
@@ -23,26 +23,22 @@ const hanlderTextMessage = async (msg) => {
     if (isSuccess) {
       bot.sendMessage(chatId, data);
     } else {
-      bot.sendMessage(chatId, `Call Azure OpenAI API failed. Error: ${error.message || error.error.message}`);
+      bot.sendMessage(chatId, `${TIPS.GPTAPIError[languageCode]}. Error: ${error.message || error.error.message}`);
     }
   } else {
-    bot.sendMessage(chatId, `Non-text messages are currently not supported.`);
+    bot.sendMessage(chatId, TIPS.ContentNotSupported[languageCode]);
   }
 };
 
 bot.on('message', async (msg) => {
   console.log(dateFormat(), `receive message: ${JSON.stringify(msg)}`)
-  const chatId = msg.chat.id;
+  const { chat: { id: chatId }, from: { language_code: languageCode } } = msg;
   if (IS_PRIVATE && !AUTH_USER_IDS.includes(msg.from.id)) {
     console.warn(dateFormat(), `${msg.from.id} is not in white list`);
-    return bot.sendMessage(chatId, `You don't have permission to use this private bot.`);
+    return bot.sendMessage(chatId, TIPS.UnAuthorized[languageCode]);
   } else {
     hanlderTextMessage(msg);
   }
-});
-
-bot.on('channel_post', (msg) => {
-  hanlderTextMessage(msg);
 });
 
 bot.on('polling_error', (error) => {

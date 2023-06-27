@@ -38,6 +38,21 @@ const TIPS = {
     [LANGCODE.CNS]: '你好',
     [LANGCODE.CNT]: '你好',
     [LANGCODE.EN]: 'Hello',
+  },
+  ContentNotSupported: {
+    [LANGCODE.CNS]: '暂不非文本消息',
+    [LANGCODE.CNT]: `暫不支持非文本消息`,
+    [LANGCODE.EN]: `Non-text messages are currently not supported.`,
+  },
+  GPTAPIError: {
+    [LANGCODE.CNS]: '调用 Azure OpenAI API 失败',
+    [LANGCODE.CNT]: '·調用 Azure OpenAI API 失敗',
+    [LANGCODE.EN]: `Call Azure OpenAI API failed`,
+  },
+  UnAuthorized: {
+    [LANGCODE.CNS]: '你没有权限使用此私人机器人',
+    [LANGCODE.CNT]: `你沒有權限使用此私人機器人`,
+    [LANGCODE.EN]: `You don't have permission to use this private bot.`,
   }
 };
 

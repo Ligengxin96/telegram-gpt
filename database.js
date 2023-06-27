@@ -93,6 +93,7 @@ class Database {
     }
   }
 }
+
 const databaseDir = './database';
 const databaseFilePath = `./${databaseDir}/telegram-GPT.sqlite`;
 try {
