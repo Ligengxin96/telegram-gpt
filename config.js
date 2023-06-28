@@ -53,6 +53,11 @@ const TIPS = {
     [LANGCODE.CNS]: '你没有权限使用此私人机器人',
     [LANGCODE.CNT]: `你沒有權限使用此私人機器人`,
     [LANGCODE.EN]: `You don't have permission to use this private bot.`,
+  },
+  ReplayTimeout: {
+    [LANGCODE.CNS]: '获取回复超时',
+    [LANGCODE.CNT]: `獲取回復超時`,
+    [LANGCODE.EN]: `Get reply timeout`,
   }
 };
 

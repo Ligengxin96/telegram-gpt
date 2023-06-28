@@ -53,13 +53,13 @@ const processTextMessage = async (msg) => {
 
 const getChatCompletions = async (originMsg, messages, command) => {
   try {
-    const { chat: { id: chatId }, from: { id: uerId, username }, message_id: messageId, text } = originMsg;
+    const { chat: { id: chatId }, from: { id: uerId, username, language_code: languageCode }, message_id: messageId, text } = originMsg;
     const timeout = setTimeout(() => {
       console.warn(dateFormat(), `Get reply timeout. text: ${text}`)
     }, 30 * 1000);
     const completions = await Promise.race([
       client.getChatCompletions('gpt-35-turbo', messages, { maxTokens: 8192 - JSON.stringify(messages).length }),
-      new Promise((resolve) => { setTimeout(() => { resolve({ choices: [{ message: { content: 'Get reply timeout.' }, timeout: true }] }) }, 60 * 1000) }),
+      new Promise((resolve) => { setTimeout(() => { resolve({ choices: [{ message: { content: TIPS.ReplayTimeout[languageCode] }, timeout: true }] }) }, 60 * 1000) }),
     ]);
     clearTimeout(timeout);
     const replys = [];
